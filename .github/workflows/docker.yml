@@ -54,10 +54,10 @@ jobs:
           known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
       - name: Adding Known Hosts
         #if: ${{ vars.SSH_HOST != '' }}
-        run: ssh-keyscan -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
+        run: ssh-keyscan -p 3022 -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: "Deploy to server"
         #if: ${{ vars.SSH_HOST != '' }}
-        run: ssh monster@${{ vars.SSH_HOST }} 'cd docker.services/${{ github.event.repository.name }} && git pull && docker login ghcr.io -u ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker-compose pull && docker-compose build && docker-compose up -d && docker system prune --force'
+        run: ssh monster@${{ vars.SSH_HOST }} -p 3022 'cd docker.services/${{ github.event.repository.name }} && git pull && docker login ghcr.io -u ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker-compose pull && docker-compose build && docker-compose up -d && docker system prune --force'
       - name: Send message to Telegram
         uses: Lukasss93/telegram-action@v2
         env:
