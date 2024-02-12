@@ -1,0 +1,11 @@
+version: '3'
+services:
+  sibur_buggy_bot:
+    image: ghcr.io/monster1025/sibur_buggy_bot:master
+    container_name: sibur_buggy_bot
+    restart: always
+    env_file: ./settings.env
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m

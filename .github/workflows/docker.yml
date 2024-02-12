@@ -4,9 +4,7 @@ name: Create and publish a Docker image
 on:
   push:
     branches: [ "master" ]
-    tags:
-      - '*'
-      
+
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
@@ -47,3 +45,21 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+      # ------------------------ This is deploy pipeline --------------------------
+      - name: Install SSH Key
+        #if: ${{ vars.SSH_HOST != '' }}
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+      - name: Adding Known Hosts
+        #if: ${{ vars.SSH_HOST != '' }}
+        run: ssh-keyscan -H ${{ vars.SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: "Deploy to server"
+        #if: ${{ vars.SSH_HOST != '' }}
+        run: ssh monster@${{ vars.SSH_HOST }} 'cd docker.services/${{ github.event.repository.name }} && git pull && docker login ghcr.io -u ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} && docker-compose pull && docker-compose build && docker-compose up -d && docker system prune --force'
+      - name: Send message to Telegram
+        uses: Lukasss93/telegram-action@v2
+        env:
+          TELEGRAM_TOKEN: ${{ vars.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT: 123622180
