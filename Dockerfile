@@ -12,4 +12,4 @@ RUN dotnet publish -c release --property PublishDir=/app --no-restore /p:TreatWa
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app ./
-ENTRYPOINT ["dotnet", "Sibur.BuggyBot.dll]
+ENTRYPOINT ["dotnet", "Sibur.BuggyBot.dll"]
