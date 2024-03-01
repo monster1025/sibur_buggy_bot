@@ -20,8 +20,10 @@ public class App : IApp
 
     private async Task OnMessage(Message message)
     {
-        if (message.Text?.StartsWith($"@{_telegram.NickName}") == true)
+        if (message.Text?.StartsWith($"@{_telegram.NickName}") == true || 
+            message.Caption?.StartsWith($"@{_telegram.NickName}") == true)
         {
+            //var text = message.Text ?? message.Caption;
             var assignee = _assignee[_random.Next(0, _assignee.Length)];
             var msg = $"@{assignee}, прошу взять в работу.";
 
